@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}
+  {{ title }}
+{% endblock %}
+{% block content %}
+{% load cache %}
+  <div class="container py-5">     
+    <h1>Все ответы бота</h1>
+    <article>
+      {% include 'includes/message_card.html' %}
+    </article>
+    {% include 'includes/paginator.html' %}
+  </div>  
+{% endblock %}
