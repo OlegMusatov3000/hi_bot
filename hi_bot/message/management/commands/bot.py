@@ -18,7 +18,7 @@ from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
 
 from hi_bot.settings import TOKEN, API
-from core import parsing_news
+from core.utils import parsing_news
 from message.models import User, Messages
 
 BUTTONS = (
@@ -94,7 +94,7 @@ async def help_command(message: Message):
 async def get_news(message: Message):
     try:
         user = get_object_or_404(User, username=message.chat.username)
-        date_timestamp, url, desc, title = parsing_news.main()
+        date_timestamp, url, desc, title = parsing_news()
         answer = Messages.objects.create(
             recipient=user,
             description=desc,

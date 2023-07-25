@@ -5,7 +5,7 @@ from . import views
 app_name = 'message'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('change/', views.bot_change, name='bot_change'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path(
         'message/<int:message_id>/edit/',
         views.message_edit,

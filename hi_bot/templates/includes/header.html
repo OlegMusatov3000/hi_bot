@@ -18,8 +18,8 @@
         </li>
         {% if user_is_staff %}
         <li class="nav-item"> 
-          <a class="nav-link {% if view_name == 'message:bot_change' %}active{% endif %}"
-          href="{% url 'message:bot_change' %}">Изменить функционал бота</a>
+          <a class="nav-link {% if view_name == 'message:dashboard' %}active{% endif %}"
+          href="{% url 'message:dashboard' %}">Смотреть статистику использования</a>
         </li>
         {% endif %}
         {% if user.is_authenticated %}

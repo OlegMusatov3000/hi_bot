@@ -58,10 +58,10 @@ class User(AbstractUser):
 
 class Messages(models.Model):
     class Commands(models.TextChoices):
-        START = COMMANDS['start'], _('старт')
-        HELP = COMMANDS['help'], _('хелпа')
-        NEWS = COMMANDS['news'], _('новости')
-        WEATHER = COMMANDS['weather'], _('погода')
+        START = COMMANDS['start'], _('START')
+        HELP = COMMANDS['help'], _('HELP')
+        NEWS = COMMANDS['news'], _('NEWS')
+        WEATHER = COMMANDS['weather'], _('WEATHER')
 
     recipient = models.ForeignKey(
         User,
@@ -119,6 +119,9 @@ class Messages(models.Model):
         blank=True,
         null=True,
     )
+
+    def __str__(self):
+        return f'{self.command_response}'
 
     class Meta:
         verbose_name = 'Ответ'

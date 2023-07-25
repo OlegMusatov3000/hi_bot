@@ -1,9 +1,16 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from collections import Counter
+from django.shortcuts import (
+    render,
+    get_object_or_404,
+    get_list_or_404,
+    redirect
+)
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
-from .models import Messages
+from .models import Messages, User
 from .forms import MessageForm
+from core.utils import get_favorite_command
 
 NUMBER_OF_POSTS = 10
 
@@ -34,8 +41,20 @@ def index(request):
 
 
 @login_required
-def bot_change(request, post_id):
-    pass
+def dashboard(request):
+    if request.user.role in ('moderator', 'admin'):
+        messages_list = get_list_or_404(Messages)
+        users_list = get_list_or_404(User)
+        template = 'message/dashboard.html'
+        context = {
+            'favorite_command': get_favorite_command(messages_list),
+            'messages_list': messages_list,
+            'messages_count': len(messages_list),
+            'users_count': len(users_list),
+            'page_obj': paginate(request, users_list),
+        }
+        return render(request, template, context)
+    return (redirect('message:index'))
 
 
 @login_required
