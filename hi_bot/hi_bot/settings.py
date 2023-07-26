@@ -24,10 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'message.apps.MessageConfig',
     'core.apps.CoreConfig',
     'about.apps.AboutConfig',
     'users.apps.UsersConfig',
+    'api.apps.ApiConfig',
+    'django_filters',
     'sorl.thumbnail',
 ]
 
