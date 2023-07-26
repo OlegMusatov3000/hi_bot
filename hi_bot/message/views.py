@@ -4,15 +4,11 @@ from django.shortcuts import (
     get_list_or_404,
     redirect
 )
-from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
+from core.utils import paginate
 from .models import Answer, User
 from .forms import MessageForm
-
-
-def paginate(request, object, count=10):
-    return Paginator(object, count).get_page(request.GET.get('page'))
 
 
 def index(
@@ -20,7 +16,7 @@ def index(
     title='Вcе ответы бота',
     template='message/index.html'
 ):
-    messages = Answer.objects.order_by('-created').all()
+    messages = Answer.objects.all()
     context = {
         'page_obj': paginate(request, messages),
         'title': title,

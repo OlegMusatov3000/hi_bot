@@ -1,29 +1,20 @@
 import os
 import sys
 import logging
-import datetime
-from datetime import datetime as dt
 
 import django
 from aiogram import Bot
 from aiogram.types import Message, KeyboardButton, ReplyKeyboardMarkup
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-from django.utils import timezone
 from django.http import Http404
 from django.core.management.base import BaseCommand
-from django.shortcuts import get_object_or_404
 
 from hi_bot.settings import TOKEN
-from core.utils import parsing_news, get_weather
-from message.models import User, Answer
+from core.utils import parsing_news, get_weather, create_message
+from message.models import Answer
+from message.constants import PLEASE_REGISTER, UNKNOWN_ERROR
 
-PLEASE_REGISTER = (
-    'Хей приятель, чтобы пользоваться мной зарегайся на нашем '
-    'крутом сервисе. \nПри регистрации необходимо чтобы твой логин '
-    'в телеге совпадал с логином на нашем сервисе:)'
-)
-UNKNOWN_ERROR = 'Упс, произошла какая то ошибка -> вот она: '
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -51,11 +42,7 @@ async def start_command(
 ):
     try:
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(*buttons)
-        user = get_object_or_404(User, username=message.chat.username)
-        answer = Answer.objects.create(
-            recipient=user,
-            command_response=Answer.Command.START
-        )
+        answer = create_message(Answer.Command.START, message.chat.username)
         await message.reply(
             f'Привет {answer.recipient}. {answer.command_response}',
             reply_markup=keyboard
@@ -70,10 +57,9 @@ async def start_command(
 @dp.message_handler(commands=['help'])
 async def help_command(message: Message):
     try:
-        user = get_object_or_404(User, username=message.chat.username)
-        answer = Answer.objects.create(
-            recipient=user,
-            command_response=Answer.Command.HELP
+        answer = create_message(
+            command=Answer.Command.HELP,
+            username=message.chat.username
         )
         await message.reply(answer.command_response)
     except Http404:
@@ -86,18 +72,15 @@ async def help_command(message: Message):
 @dp.message_handler(commands=['news'])
 async def get_news(message: Message):
     try:
-        user = get_object_or_404(User, username=message.chat.username)
-        date_timestamp, url, desc, title = parsing_news()
-        answer = Answer.objects.create(
-            recipient=user,
-            description=desc,
+        pub_date, url, description, title = parsing_news()
+        answer = create_message(
+            command=Answer.Command.NEWS,
+            username=message.chat.username,
+            description=description,
             title=title,
-            pub_date=timezone.make_aware(
-                dt.fromtimestamp(date_timestamp) + datetime.timedelta(hours=4)
-            ),
-            link=url,
-            command_response=Answer.Command.NEWS
-        )
+            pub_date=pub_date,
+            link=url
+            )
         await message.reply(
             f'{answer.command_response} \n {answer.pub_date} \n {answer.link}'
         )
@@ -123,18 +106,14 @@ async def get_city(
 @dp.message_handler()
 async def say_me_weather(message: Message):
     try:
-        user = get_object_or_404(User, username=message.chat.username)
-        weather = get_weather(message.text.split()[-1])
-        answer = Answer.objects.create(
-            recipient=user,
-            city=weather.get('name'),
-            temp=weather.get('main').get('temp'),
-            humidity=weather.get('main').get('humidity'),
-            sunrise=timezone.make_aware(
-                dt.fromtimestamp(weather.get('sys').get('sunrise')) +
-                datetime.timedelta(hours=7)
-            ),
-            command_response=Answer.Command.WEATHER
+        city, temp, humidity, sunrise = get_weather(message.text.split()[-1])
+        answer = create_message(
+            command=Answer.Command.WEATHER,
+            username=message.chat.username,
+            city=city,
+            temp=temp,
+            humidity=humidity,
+            sunrise=sunrise
         )
         await message.reply(
             f'{answer.command_response} \n'

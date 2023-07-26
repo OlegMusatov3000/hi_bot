@@ -3,23 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-
-COMMANDS = {
-    'start': (
-        'Я бот который родился в процессе написания тестового задания. '
-        'Расскажу интересные новости и скажу какая погода. '
-        'Cписок рабочих команд ты увидешь заюзая команду: /help '
-        'Надеюсь тебе понравится))'
-    ),
-    'help': (
-        '/start: Скажу привет и расскажу кратко, что умею, \n'
-        '/help: Расскажу какими командами ты можешь воспользоваться, \n'
-        '/weather: расскажу какая погода в этом городе, \n'
-        '/news: Интересные новости читать будем??!!1! '
-    ),
-    'news': 'Я ща тебе такое расскажу, только сначала присядь ',
-    'weather': 'Так а ты вообще знаешь че там по погоде? Ща буду рассказывать '
-}
+from .constants import COMMANDS
 
 
 class User(AbstractUser):
@@ -44,7 +28,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        ordering = ['id']
+        ordering = ('id',)
 
 
 class Answer(models.Model):
@@ -67,11 +51,13 @@ class Answer(models.Model):
     )
     description = models.TextField(
         'Описание',
-        blank=True
+        blank=True,
+        null=True
     )
     title = models.TextField(
         'Заголовок',
-        blank=True
+        blank=True,
+        null=True
         )
     pub_date = models.DateTimeField(
         'Время получения',
@@ -83,12 +69,14 @@ class Answer(models.Model):
         choices=Command.choices)
     link = models.URLField(
         'Ссылка на новость',
-        blank=True
+        blank=True,
+        null=True
     )
     image = models.ImageField(
         'Картинка',
         upload_to=settings.MEDIA_FOR_MESSAGE,
         blank=True,
+        null=True
     )
     sunrise = models.DateTimeField(
         'Восход солнца',
@@ -104,6 +92,7 @@ class Answer(models.Model):
         'Влажность воздуха',
         max_length=30,
         blank=True,
+        null=True,
     )
     temp = models.FloatField(
         'Температура воздуха в С°',
@@ -117,4 +106,4 @@ class Answer(models.Model):
     class Meta:
         verbose_name = 'Ответ'
         verbose_name_plural = 'Ответы'
-        ordering = ['id']
+        ordering = ('-created',)
