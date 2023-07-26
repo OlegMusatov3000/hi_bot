@@ -1,33 +1,24 @@
-from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
-help_command = (
-    '/start: Скажу привет и расскажу кратко, что умею, \n'
-    '/help: Расскажу подробно какими командами ты можешь воспользоваться, \n'
-    '/weather: расскажу какая погода в этом городе, \n'
-    '/news: Интересные новости читать будем??!!1! '
-)
-start_command = (
+COMMANDS = {
+    'start': (
         'Я бот который родился в процессе написания тестового задания. '
         'Расскажу интересные новости и скажу какая погода. '
         'Cписок рабочих команд ты увидешь заюзая команду: /help '
         'Надеюсь тебе понравится))'
-    )
-news_command = (
-        'Я ща тебе такое расскажу, только сначала присядь '
-    )
-weather_command = (
-    'Такс а ты вообще знаешь че там по погоде? Ща буду рассказывать '
-)
-COMMANDS = {
-    'start': start_command,
-    'help': help_command,
-    'news': news_command,
-    'weather': weather_command
-
+    ),
+    'help': (
+        '/start: Скажу привет и расскажу кратко, что умею, \n'
+        '/help: Расскажу какими командами ты можешь воспользоваться, \n'
+        '/weather: расскажу какая погода в этом городе, \n'
+        '/news: Интересные новости читать будем??!!1! '
+    ),
+    'news': 'Я ща тебе такое расскажу, только сначала присядь ',
+    'weather': 'Так а ты вообще знаешь че там по погоде? Ща буду рассказывать '
 }
 
 
@@ -56,8 +47,8 @@ class User(AbstractUser):
         ordering = ['id']
 
 
-class Messages(models.Model):
-    class Commands(models.TextChoices):
+class Answer(models.Model):
+    class Command(models.TextChoices):
         START = COMMANDS['start'], _('START')
         HELP = COMMANDS['help'], _('HELP')
         NEWS = COMMANDS['news'], _('NEWS')
@@ -89,7 +80,7 @@ class Messages(models.Model):
     )
     command_response = models.TextField(
         'Команда для бота',
-        choices=Commands.choices)
+        choices=Command.choices)
     link = models.URLField(
         'Ссылка на новость',
         blank=True

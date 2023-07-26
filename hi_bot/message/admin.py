@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import User, Messages
+from .models import User, Answer
 
 
-@admin.register(Messages)
+@admin.register(Answer)
 class MessagesAdmin(admin.ModelAdmin):
     list_display = ('id', 'recipient', 'created')
     search_fields = ('recipient',)

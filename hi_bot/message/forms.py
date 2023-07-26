@@ -1,9 +1,9 @@
 from django import forms
 
-from .models import Messages
+from .models import Answer
 
 
 class MessageForm(forms.ModelForm):
     class Meta:
-        model = Messages
+        model = Answer
         fields = '__all__'

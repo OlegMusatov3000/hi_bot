@@ -128,14 +128,11 @@ CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 MEDIA_FOR_MESSAGE = 'message/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'message.User'
 
-API = '892bf1b51c305658a8b841a180807b5f'
+API_WEATHER = '892bf1b51c305658a8b841a180807b5f'
+NEWS_URL = 'https://www.securitylab.ru'
+WEATHER_URL = 'https://api.openweathermap.org/'
 TOKEN = os.getenv('TOKEN')

@@ -1,4 +1,3 @@
-
 def user_is_staff(request):
     user_is_staff = False
     if (

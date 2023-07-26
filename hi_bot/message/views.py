@@ -7,36 +7,32 @@ from django.shortcuts import (
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
-from .models import Messages, User
+from .models import Answer, User
 from .forms import MessageForm
 
-NUMBER_OF_POSTS = 10
+
+def paginate(request, object, count=10):
+    return Paginator(object, count).get_page(request.GET.get('page'))
 
 
-def paginate(request, messages):
-    paginator = Paginator(messages, NUMBER_OF_POSTS)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return page_obj
-
-
-def index(request):
-    messages = Messages.objects.order_by('-created').all()
-    title = 'Вcе ответы бота'
+def index(
+    request,
+    title='Вcе ответы бота',
+    template='message/index.html'
+):
+    messages = Answer.objects.order_by('-created').all()
     context = {
         'page_obj': paginate(request, messages),
         'title': title,
     }
-    template = 'message/index.html'
     return render(request, template, context)
 
 
 @login_required
-def dashboard(request):
+def dashboard(request, template='message/dashboard.html'):
     if request.user.role in ('moderator', 'admin'):
-        messages_list = get_list_or_404(Messages)
+        messages_list = get_list_or_404(Answer)
         users_list = get_list_or_404(User)
-        template = 'message/dashboard.html'
         context = {
             'messages_list': messages_list,
             'messages_count': len(messages_list),
@@ -48,12 +44,14 @@ def dashboard(request):
 
 
 @login_required
-def message_edit(request, message_id):
-    if request.user.role in ('moderator', 'admin'):
-        message = get_object_or_404(Messages, id=message_id)
-        template = 'message/edit_message.html'
-        title = 'Меняем сообщение бота'
-
+def message_edit(
+    request,
+    message_id,
+    template='message/edit_message.html',
+    title='Меняем сообщение бота',
+):
+    if request.user.role in (User.UsersRole.ADMIN, User.UsersRole.MODERATOR):
+        message = get_object_or_404(Answer, id=message_id)
         if request.method == 'POST':
             form = MessageForm(
                 request.POST,

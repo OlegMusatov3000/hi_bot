@@ -9,5 +9,6 @@ urlpatterns = [
     path(
         'message/<int:message_id>/edit/',
         views.message_edit,
-        name='message_edit'),
+        name='message_edit'
+    ),
 ]
