@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
     'django_filters',
+    'drf_yasg',
     'sorl.thumbnail',
 ]
 
