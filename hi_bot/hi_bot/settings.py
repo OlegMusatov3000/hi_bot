@@ -66,7 +66,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.year.year',
-            ],
+                'core.context_processors.user_is_staff.user_is_staff',
+            ]
         },
     },
 ]
@@ -136,5 +137,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'message.User'
 
-API = os.getenv('API')
+API = '892bf1b51c305658a8b841a180807b5f'
 TOKEN = os.getenv('TOKEN')

@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
+{% load extra_tags %}
 {% block title %}
   Статистика нашего сервиса
 {% endblock %}
 {% block content %}
+{% get_favorite_command messages_list as command %}
   <div class="mb-5">
     <h3>Всего пользователей нашего сервиса: {{ users_count }}</h1>
     <h3>Всего ответов бота: {{ messages_count }}</h3>
-    <h3>Самая популярная команда бота: {{ favorite_command.1 }}</h3>
-    <h3>Ты не поверишь сколько раз ее использовали: {{ favorite_command.0 }}</h3>
+    <h3>Самая популярная команда бота: {{ command.1 }}</h3>
+    <h3>Ты не поверишь сколько раз ее использовали: {{ command.0 }}</h3>
     <h3>Давай теперь посмотрим что вытворяют с ботом наши активные пользователи</h3>
     <article>
       {% include 'includes/user_activity_card.html' %}

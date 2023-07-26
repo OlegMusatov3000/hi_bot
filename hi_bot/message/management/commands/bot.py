@@ -1,6 +1,7 @@
 import os
+import sys
 import logging
-from logging.handlers import RotatingFileHandler
+import datetime
 from datetime import datetime as dt
 
 import requests
@@ -13,6 +14,7 @@ from aiogram.types import (
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 import django
+from django.utils import timezone
 from django.http import Http404
 from django.core.management.base import BaseCommand
 from django.shortcuts import get_object_or_404
@@ -36,19 +38,15 @@ PLEASE_REGISTER = (
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.DEBUG,
-    filename='program.log',
-    filemode='w',
+    level=logging.INFO,
+    handlers=(
+        logging.StreamHandler(sys.stdout),
+    )
 )
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
-handler = RotatingFileHandler('my_logger.log', maxBytes=5000000, backupCount=5)
-logger.addHandler(handler)
 
-bot = Bot(
-    token=TOKEN
-)
+bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 
@@ -99,7 +97,9 @@ async def get_news(message: Message):
             recipient=user,
             description=desc,
             title=title,
-            pub_date=dt.fromtimestamp(date_timestamp),
+            pub_date=timezone.make_aware(
+                dt.fromtimestamp(date_timestamp) + datetime.timedelta(hours=4)
+            ),
             link=url,
             command_response=Messages.Commands.NEWS
         )
@@ -140,7 +140,10 @@ async def get_weather(message: Message):
             city=data.get('name'),
             temp=data.get('main').get('temp'),
             humidity=data.get('main').get('humidity'),
-            sunrise=dt.fromtimestamp(data.get('sys').get('sunrise')),
+            sunrise=timezone.make_aware(
+                dt.fromtimestamp(data.get('sys').get('sunrise')) +
+                datetime.timedelta(hours=7)
+            ),
             command_response=Messages.Commands.WEATHER
         )
         await message.reply(
@@ -150,7 +153,6 @@ async def get_weather(message: Message):
             f'Восход солнца: {answer.sunrise}. \n'
             f'\U00002620 Будь здоров:)'
         )
-        logger.warning(answer)
     except Http404:
         await message.reply(PLEASE_REGISTER)
     except Exception as error:

@@ -1,4 +1,3 @@
-from collections import Counter
 from django.shortcuts import (
     render,
     get_object_or_404,
@@ -10,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Messages, User
 from .forms import MessageForm
-from core.utils import get_favorite_command
 
 NUMBER_OF_POSTS = 10
 
@@ -23,18 +21,11 @@ def paginate(request, messages):
 
 
 def index(request):
-    user_is_staff = False
-    if (
-        request.user.is_authenticated
-        and request.user.role in ('moderator', 'admin')
-    ):
-        user_is_staff = True
     messages = Messages.objects.order_by('-created').all()
     title = 'Вcе ответы бота'
     context = {
         'page_obj': paginate(request, messages),
         'title': title,
-        'user_is_staff': user_is_staff
     }
     template = 'message/index.html'
     return render(request, template, context)
@@ -47,7 +38,6 @@ def dashboard(request):
         users_list = get_list_or_404(User)
         template = 'message/dashboard.html'
         context = {
-            'favorite_command': get_favorite_command(messages_list),
             'messages_list': messages_list,
             'messages_count': len(messages_list),
             'users_count': len(users_list),
