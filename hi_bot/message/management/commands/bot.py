@@ -1,3 +1,8 @@
+'''
+Модуль содержит реализацию кастомной команды "bot", которая активирует бота.
+Так же в модуле описаны все команды асинхронного бота написанного на библиотеке
+"aiogram" с логированием сообщений.
+'''
 import os
 import sys
 import logging
@@ -40,6 +45,11 @@ async def start_command(
         KeyboardButton('/news'),
     )
 ):
+    '''
+    Асинхронная функция срабатывает при получении команды "start".
+    Возвращает пользователю ответ описанный в поле "Answer.Command.START"
+    и создает объект "Answer".
+    '''
     try:
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True).add(*buttons)
         answer = create_message(Answer.Command.START, message.chat.username)
@@ -56,6 +66,11 @@ async def start_command(
 
 @dp.message_handler(commands=['help'])
 async def help_command(message: Message):
+    '''
+    Асинхронная функция срабатывает при получении команды "help".
+    Возвращает пользователю ответ описанный в поле "Answer.Command.HELP"
+    и создает объект "Answer".
+    '''
     try:
         answer = create_message(
             command=Answer.Command.HELP,
@@ -71,6 +86,11 @@ async def help_command(message: Message):
 
 @dp.message_handler(commands=['news'])
 async def get_news(message: Message):
+    '''
+    Асинхронная функция срабатывает при получении команды "NEWS".
+    Возвращает пользователю: ответ описанный в поле "Answer.Command.HELP",
+    время новости и ссылку на новость. Создает в базе данных объект "Answer".
+    '''
     try:
         pub_date, url, description, title = parsing_news()
         answer = create_message(
@@ -96,6 +116,10 @@ async def get_city(
     message: Message,
     write_city='Напиши название города на англ в котором будем искать погоду'
 ):
+    '''
+    Асинхронная функция срабатывает при получении команды "weather".
+    Спрашивает у пользователя в каком городе искать погоду
+    '''
     try:
         await message.reply(write_city)
     except Exception as error:
@@ -105,6 +129,12 @@ async def get_city(
 
 @dp.message_handler()
 async def say_me_weather(message: Message):
+    '''
+    Асинхронная функция срабатывает при получении команды любого текста.
+    При наличия города возвращает пользователю: ответ описанный в поле
+    "Answer.Command.HELP", название города, влажность воздуха,
+    время восхода солнца. Создает в базе данных объект "Answer".
+    '''
     try:
         city, temp, humidity, sunrise = get_weather(message.text.split()[-1])
         answer = create_message(

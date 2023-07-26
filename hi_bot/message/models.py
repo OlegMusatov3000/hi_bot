@@ -7,7 +7,11 @@ from .constants import COMMANDS
 
 
 class User(AbstractUser):
-    """Класс пользователей."""
+    '''
+    Класс кастомной модели "User".
+    Добавлено поле "role".
+    '''
+
     class UsersRole(models.TextChoices):
         ANON = 'anonymous', _('анон')
         USER = 'user', _('Пользователь')
@@ -22,16 +26,18 @@ class User(AbstractUser):
         default=UsersRole.USER
     )
 
-    def __str__(self):
-        return f'{self.username}'
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ('id',)
 
+    def __str__(self):
+        return f'{self.username}'
+
 
 class Answer(models.Model):
+    '''Класс модели "Answer".'''
+
     class Command(models.TextChoices):
         START = COMMANDS['start'], _('START')
         HELP = COMMANDS['help'], _('HELP')
@@ -100,10 +106,10 @@ class Answer(models.Model):
         null=True,
     )
 
-    def __str__(self):
-        return f'{self.command_response}'
-
     class Meta:
         verbose_name = 'Ответ'
         verbose_name_plural = 'Ответы'
         ordering = ('-created',)
+
+    def __str__(self):
+        return f'{self.command_response}'

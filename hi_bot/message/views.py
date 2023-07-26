@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 from core.utils import paginate
 from .models import Answer, User
-from .forms import MessageForm
+from .forms import AnswerForm
 
 
 def index(
@@ -16,6 +16,11 @@ def index(
     title='Вcе ответы бота',
     template='message/index.html'
 ):
+    '''
+    Обработчик для главной страницы.
+    Отправляет в шаблон пагинатор со всеми объектами модели "Answer".
+    Шаблон показывает все сообщения бота.
+    '''
     messages = Answer.objects.all()
     context = {
         'page_obj': paginate(request, messages),
@@ -26,6 +31,13 @@ def index(
 
 @login_required
 def dashboard(request, template='message/dashboard.html'):
+    '''
+    Обработчик для страницы статистики сервиса.
+    Отправляет в шаблон пагинатор со всеми объектами модели "User".
+    При отсутствии запросов выдаст 404 и покажет пользователю кастомный шаблон.
+    Показывает статистику сервиса о количествах запросов
+    и самых популярных командах каждого пользователя.
+    '''
     if request.user.role in ('moderator', 'admin'):
         messages_list = get_list_or_404(Answer)
         users_list = get_list_or_404(User)
@@ -46,10 +58,15 @@ def message_edit(
     template='message/edit_message.html',
     title='Меняем сообщение бота',
 ):
+    '''
+    Обработчик для страницы редактирования сообщения.
+    Отправляет в шаблон форму редактирования объекта модели "Answer".
+    Дает возможность администраторам и модераторам редактировать ответы бота.
+    '''
     if request.user.role in (User.UsersRole.ADMIN, User.UsersRole.MODERATOR):
         message = get_object_or_404(Answer, id=message_id)
         if request.method == 'POST':
-            form = MessageForm(
+            form = AnswerForm(
                 request.POST,
                 files=request.FILES or None,
                 instance=message
@@ -58,7 +75,7 @@ def message_edit(
                 message = form.save(commit=False)
                 message.save()
                 return (redirect('message:index'))
-        form = MessageForm(
+        form = AnswerForm(
             files=request.FILES or None,
             instance=message
         )
