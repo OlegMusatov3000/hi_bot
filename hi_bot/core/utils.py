@@ -37,7 +37,7 @@ def parsing_news():
         dt.datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S').timetuple()
     )
     pub_date = timezone.make_aware(
-        dt.datetime.fromtimestamp(date_timestamp) + dt.timedelta(hours=4)
+        dt.datetime.fromtimestamp(date_timestamp)
     )
 
     return pub_date, url, description, title,
@@ -56,8 +56,7 @@ def get_weather(city):
     temp = weather_data.get('main').get('temp')
     humidity = weather_data.get('main').get('humidity')
     sunrise = timezone.make_aware(
-        dt.datetime.fromtimestamp(weather_data.get('sys').get('sunrise')) +
-        dt.timedelta(hours=7)
+        dt.datetime.fromtimestamp(weather_data.get('sys').get('sunrise'))
     )
     return city, temp, humidity, sunrise
 
